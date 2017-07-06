@@ -14,8 +14,14 @@ module ``about pipelining`` =
     let square x =
         x * x
 
+    let cube x =
+        x * x * x
+
     let isEven x =
         x % 2 = 0
+
+    let isOdd x =
+        not(isEven x)
 
     [<Koan>]
     let SquareEvenNumbersWithSeparateStatements() =
@@ -27,7 +33,8 @@ module ``about pipelining`` =
         let evens = List.filter isEven numbers
         let result = List.map square evens
 
-        AssertEquality result __
+        AssertEquality evens [0;2;4]
+        AssertEquality result [0;4;16]
 
     [<Koan>]
     let SquareEvenNumbersWithParens() =
@@ -39,7 +46,7 @@ module ``about pipelining`` =
 
         let result = List.map square (List.filter isEven numbers)
 
-        AssertEquality result __
+        AssertEquality result [0;4;16]
 
     [<Koan>]
     let SquareEvenNumbersWithPipelineOperator() =
@@ -51,10 +58,18 @@ module ``about pipelining`` =
             |> List.filter isEven
             |> List.map square
         
-        AssertEquality result __
+        AssertEquality result [0;4;16]
+
+        let result2 =
+            [0..5]
+            |> List.filter isOdd
+            |> List.map cube
+        
+        AssertEquality result2 [1;27;125]
 
     [<Koan>]
     let HowThePipeOperatorIsDefined() =
+        //wrapping the function name in () makes it an infix operator (much like + or %)
         let (|>) x f =
             f x
 
@@ -63,4 +78,10 @@ module ``about pipelining`` =
             |> List.filter isEven
             |> List.map square
 
-        AssertEquality result __
+        AssertEquality result [0;4;16]
+
+        //custom infix operator here
+        let (|||) x y =
+            x * y
+        
+        AssertEquality (5 ||| 2) 10
