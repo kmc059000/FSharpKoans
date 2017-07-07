@@ -60,6 +60,28 @@ module ``about the stock example`` =
 
     [<Koan>]
     let YouGotTheAnswerCorrect() =
-        let result =  __
+        let split (x:string) = x.Split(',')
+        let parse x = System.Double.Parse(x)
+        let difference x y = abs (x - y)
+
+        let calculateDifference (x:string[]) =
+            let date = x.[0]
+            let openNum = parse x.[1]
+            let closeNum = parse x.[4]
+            let diff = difference openNum closeNum
+            (date, diff)
+
+        let mapStock x = x |> split |> calculateDifference
+        
+        let getDate = fst
+        let getDifference = snd
+
+        let result = 
+            stockData
+            |> Seq.skip 1
+            |> Seq.map mapStock
+            |> Seq.maxBy getDifference
+            |> getDate
+
         
         AssertEquality "2012-03-13" result
